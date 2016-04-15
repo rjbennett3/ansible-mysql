@@ -1,0 +1,49 @@
+---
+- name: Add repo
+  yum: name=http://repo.mysql.com/mysql-community-release-el{{ansible_distribution_major_version}}.rpm
+
+- name: Disable repo by default
+  replace: dest=/etc/yum.repos.d/{{item}} regexp='enabled=1' replace='enabled=0'
+  with_items:
+    - mysql-community.repo
+    - mysql-community-source.repo
+
+- name: Install
+  yum: name={{item}} state=present enablerepo=mysql{{mysql_version_short}}-community
+  with_items:
+    - mysql-community-server
+    - MySQL-python
+
+- name: Make sure datadir is present
+  file: path={{mysql_datadir}} state=directory owner=mysql group=mysql mode=0755
+
+- name: Configure server
+  template: dest=/etc/my.cnf src=my.cnf.j2 mode=0644
+  notify: Restart mysql
+
+- name: Enable service
+  service: name=mysqld state=started enabled=yes
+
+- name: Secure installation
+  mysql_user: name=root host={{item}} check_implicit_admin=yes password="{{mysql_root_password}}" login_user=root login_password="{{mysql_root_password}}"
+  with_items:
+    - "{{ansible_fqdn|lower()}}"
+    - "{{ansible_hostname|lower()}}"
+    - localhost
+    - 127.0.0.1
+    - ::1
+  when: mysql_version_short|int < 57 and mysql_root_password != ''
+
+- name: Remove anonymous users
+  mysql_user: name='' host={{item}} state=absent login_user=root login_password="{{mysql_root_password}}"
+  with_items:
+    - "{{ansible_hostname|lower()}}"
+    - "{{ansible_fqdn|lower()}}"
+    - localhost
+  when: mysql_version_short|int < 57
+
+- name: remove test database
+  mysql_db: name=test state=absent login_user=root login_password="{{mysql_root_password}}"
+  when: mysql_version_short|int < 57
+
+- include: backup.yml

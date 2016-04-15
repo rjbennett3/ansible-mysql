@@ -1,0 +1,6 @@
+---
+mysql_version: 5.6
+mysql_datadir: /var/lib/mysql
+mysql_root_password: mysql
+mysql_backup_password: mysqlbck
+mysql_backup_email: mysqlbck@localhost

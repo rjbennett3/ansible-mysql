@@ -1,0 +1,37 @@
+---
+- name: Create backup user
+  user: name=mysqlbck group=mysql createhome=yes state=present
+
+- stat: path=/home/mysqlbck follow=yes
+  register: last
+
+- fail: msg="/home/mysqlbck is not a directory or link to a directory"
+  when: last.stat.exists and not last.stat.isdir
+
+- name: Make sure backup user home dir is present
+  file: path=/home/mysqlbck state=directory owner=mysqlbck
+  when: not last.stat.exists
+
+- name: Create read-only mysql backup user
+  mysql_user: name=mysqlbck host=localhost password="{{mysql_backup_password}}" priv=*.*:ALL login_user=root login_password="{{mysql_root_password}}"
+
+- name: Configure backup user access to mysql
+  template: dest=/home/mysqlbck/.my.cnf src=mysqlbck.my.cnf.j2 mode=0400
+  become: true
+  become_user: mysqlbck
+
+- name: Make sure bin and backup directories are present
+  file: path=/home/mysqlbck/{{item}} state=directory mode=0750
+  with_items:
+    - bin
+    - dumps
+  become: true
+  become_user: mysqlbck
+
+- name: Drop backup script
+  template: dest=/home/mysqlbck/bin/backup_all.sh src=backup_all.sh.j2 mode=0750
+  become: true
+  become_user: mysqlbck
+
+- name: Set backup cronjob
+  cron: name="mysql backup" minute=0 hour=2 state=present user=mysqlbck job=/home/mysqlbck/bin/backup_all.sh

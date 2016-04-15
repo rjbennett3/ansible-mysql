@@ -1,0 +1,24 @@
+#!/bin/bash
+
+TIMESTAMP=$(date '+%Y%m%d-%H%M')
+DUMPDIR=dumps
+DUMPSTOKEEP=5
+
+dumpfile=$DUMPDIR/DailyBackup-$TIMESTAMP.sql
+logfile=$DUMPDIR/DailyBackup-$TIMESTAMP.log
+
+# Prune old backups
+find $DUMPDIR -ctime +$DUMPSTOKEEP -exec rm {} \;
+
+# Backup
+mysqldump -h localhost -u mysqlbck --opt --all-databases --events > $dumpfile 2> $logfile
+echo -e "\n\n" >> $logfile
+
+ls -l $dumpfile >> $logfile
+echo -e "\n\n" >> $logfile
+
+# Compress backup
+gzip $dumpfile >> $logfile 2>&1
+
+# Mail results
+cat $logfile | mail -s "$(hostname -s) MySQL dump for $(date)" {{mysql_backup_email}}

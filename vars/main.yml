@@ -1,0 +1,2 @@
+---
+mysql_version_short: "{{mysql_version | replace('.', '')}}"
