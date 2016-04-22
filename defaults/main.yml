@@ -4,3 +4,9 @@ mysql_datadir: /var/lib/mysql
 mysql_root_password: mysql
 mysql_backup_password: mysqlbck
 mysql_backup_email: mysqlbck@localhost
+mysql_databases: []
+  # Fields
+  # - name: database_name
+  #   user: database_username
+  #   password: database_password_for_user
+  #   hosts: [host1, host2]

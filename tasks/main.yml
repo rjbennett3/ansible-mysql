@@ -46,4 +46,14 @@
   mysql_db: name=test state=absent login_user=root login_password="{{mysql_root_password}}"
   when: mysql_version_short|int < 57
 
+- name: Add databases
+  mysql_db: name="{{item.name}}" state=present login_user=root login_password="{{mysql_root_password}}"
+  with_items: "{{mysql_databases}}"
+
+- name: Add users
+  mysql_user: name="{{item.0.user}}" host="{{item.1}}" password="{{item.0.password}}" priv="{{item.0.name}}.*:ALL" state=present login_user=root login_password="{{mysql_root_password}}"
+  with_subelements:
+    - "{{mysql_databases}}"
+    - hosts
+
 - include: backup.yml
