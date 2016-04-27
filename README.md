@@ -6,6 +6,10 @@ This role adds the official mysql repository, but leaves it disabled.
 
 Select the version to install with `mysql_version`. You should also change the root password, the default is `mysql`.
 
+A local backup cron job is installed.
+
+Multiple databases can be configured through `mysql_databases` list. Databases, users and grants will be generated based on this list (see `default/main.yml` for options).
+
 Requirements
 ------------
 See `meta/main.yml`.
