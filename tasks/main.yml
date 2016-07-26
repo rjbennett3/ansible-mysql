@@ -1,15 +1,13 @@
 ---
 - name: Add repo
-  yum: name=http://repo.mysql.com/mysql-community-release-el{{ansible_distribution_major_version}}.rpm
-
-- name: Disable repo by default
-  replace: dest=/etc/yum.repos.d/{{item}} regexp='enabled=1' replace='enabled=0'
+  yum_repository: file=mysql-community name={{item}} description='{{item}}' enabled=no baseurl=http://repo.mysql.com/yum/{{item}}/el/{{ansible_distribution_major_version}}/$basearch/ gpgcheck=yes gpgkey=http://repo.mysql.com/RPM-GPG-KEY-mysql state=present owner=root group=root mode=0644
   with_items:
-    - mysql-community.repo
-    - mysql-community-source.repo
+    - mysql-{{mysql_version}}-community
+    - mysql-tools-community
+    - mysql-connectors-community
 
 - name: Install
-  yum: name={{item}} state=present enablerepo=mysql{{mysql_version_short}}-community
+  yum: name={{item}} state=present enablerepo=mysql-{{mysql_version}}-community
   with_items:
     - mysql-community-server
     - MySQL-python
