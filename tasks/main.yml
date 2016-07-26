@@ -30,7 +30,7 @@
     - localhost
     - 127.0.0.1
     - ::1
-  when: mysql_version_short|int < 57 and mysql_root_password != ''
+  when: mysql_version | version_compare('5.7', '<') and mysql_root_password != ''
 
 - name: Remove anonymous users
   mysql_user: name='' host={{item}} state=absent login_user=root login_password='{{mysql_root_password}}'
@@ -38,11 +38,11 @@
     - '{{ansible_hostname|lower()}}'
     - '{{ansible_fqdn|lower()}}'
     - localhost
-  when: mysql_version_short|int < 57
+  when: mysql_version | version_compare('5.7', '<')
 
 - name: Remove test database
   mysql_db: name=test state=absent login_user=root login_password='{{mysql_root_password}}'
-  when: mysql_version_short|int < 57
+  when: mysql_version | version_compare('5.7', '<')
 
 - name: Add databases
   mysql_db: name={{item.name}} state=present login_user=root login_password='{{mysql_root_password}}'
