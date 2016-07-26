@@ -9,7 +9,7 @@
   when: last.stat.exists and not last.stat.isdir
 
 - name: Make sure backup user home dir is present
-  file: path=/home/mysqlbck state=directory owner=mysqlbck
+  file: path=/home/mysqlbck state=directory owner=mysqlbck group=mysql mode=0700
   when: not last.stat.exists
 
 - name: Create read-only mysql backup user

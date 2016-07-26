@@ -16,7 +16,7 @@
   file: path={{mysql_datadir}} state=directory owner=mysql group=mysql mode=0755
 
 - name: Configure server
-  template: dest=/etc/my.cnf src=my.cnf.j2 mode=0644
+  template: dest=/etc/my.cnf src=my.cnf.j2 owner=root group=root mode=0644
   notify: Restart mysql
 
 - name: Enable service
