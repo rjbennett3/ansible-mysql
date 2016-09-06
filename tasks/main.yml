@@ -6,11 +6,15 @@
     - mysql-tools-community
     - mysql-connectors-community
 
-- name: Install
+- name: Install packages
   yum: name={{item}} state=present enablerepo=mysql-{{mysql_version}}-community
   with_items:
     - mysql-community-server
     - MySQL-python
+
+- name: Install development packages
+  yum: name=mysql-devel state=present enablerepo=mysql-{{mysql_version}}-community
+  when: mysql_packages_dev
 
 - name: Make sure datadir is present
   file: path={{mysql_datadir}} state=directory owner=mysql group=mysql mode=0755
