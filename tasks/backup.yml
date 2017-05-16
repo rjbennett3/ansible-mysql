@@ -3,14 +3,14 @@
   user: name=mysqlbck group=mysql createhome=yes state=present
 
 - stat: path=/home/mysqlbck follow=yes
-  register: last
+  register: mysql__r_bck_home
 
 - fail: msg='/home/mysqlbck is not a directory or link to a directory'
-  when: last.stat.exists and not last.stat.isdir
+  when: mysql__r_bck_home.stat.exists and not mysql__r_bck_home.stat.isdir
 
 - name: Make sure backup user home dir is present
   file: path=/home/mysqlbck state=directory owner=mysqlbck group=mysql mode=0700
-  when: not last.stat.exists
+  when: not mysql__r_bck_home.stat.exists
 
 - name: Create read-only mysql backup user
   mysql_user: name=mysqlbck host=localhost password='{{mysql_backup_password}}' priv=*.*:ALL login_user=root login_password='{{mysql_root_password}}'
