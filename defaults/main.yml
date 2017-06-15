@@ -1,9 +1,18 @@
 ---
+# Version to install
 mysql_version: 5.6
+
+# Path to data
 mysql_datadir: /var/lib/mysql
+
+# Root password
 mysql_root_password: mysql
+
+# Backup user password and contact email
 mysql_backup_password: mysqlbck
 mysql_backup_email: mysqlbck@localhost
+
+# List of databases
 mysql_databases: []
   # Fields
   # - name: database_name
