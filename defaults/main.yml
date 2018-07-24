@@ -67,7 +67,3 @@ mysql_databases: []
   #   user: database_username
   #   password: database_password_for_user
   #   hosts: [host1, host2]
-
-
-# Installation of  development packages
-mysql_packages_dev: no
