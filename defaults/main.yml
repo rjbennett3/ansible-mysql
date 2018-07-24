@@ -47,6 +47,9 @@ mysql_packages_dev: []
 # Path to data
 mysql_datadir: /var/lib/mysql
 
+# Set to false if you don't want to run tasks to secure the database
+mysql_secure: true
+
 # Root password
 mysql_root_password: mysql
 
