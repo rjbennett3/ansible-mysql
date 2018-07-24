@@ -61,3 +61,4 @@
     label: '{{[item.0 | combine({"password": "***"}), item.1]}}'
 
 - import_tasks: backup.yml
+  when: mysql_backup
