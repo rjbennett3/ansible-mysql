@@ -1,20 +1,18 @@
 ---
 - name: Add repo
-  yum_repository: file=mysql-community name={{item}} description='{{item}}' enabled=no baseurl=http://repo.mysql.com/yum/{{item}}/el/{{ansible_distribution_major_version}}/$basearch/ gpgcheck=yes gpgkey=http://repo.mysql.com/RPM-GPG-KEY-mysql state=present owner=root group=root mode=0644
+  yum_repository: file={{item.file|default(item.name)}} name={{item.name}} description='{{item.desctiption|default(item.name)}}' enabled={{item.enabled|default('no')}} baseurl={{item.baseurl}} gpgcheck={{item.gpgcheck|default('yes')}} gpgkey={{item.gpgkey}} state=present owner={{item.owner|default('root')}} group={{item.group|default('root')}} mode={{item.mode|default(0644)}}
   with_items:
-    - mysql-{{mysql_version}}-community
-    - mysql-tools-community
-    - mysql-connectors-community
+    - '{{mysql_repos}}'
 
 - name: Install packages
-  yum: name={{item}} state=present enablerepo=mysql-{{mysql_version}}-community
+  yum: name={{item.name}} state=present enablerepo={{item.repo|default(mysql_repos[0].name)}}
   with_items:
-    - mysql-community-server
-    - MySQL-python
+    - '{{mysql_packages}}'
 
 - name: Install development packages
-  yum: name=mysql-devel state=present enablerepo=mysql-{{mysql_version}}-community
-  when: mysql_packages_dev
+  yum: name={{item.name}} state=present enablerepo={{item.repo|default(mysql_repos[0].name)}}
+  with_items:
+    - '{{mysql_packages_dev}}'
 
 - name: Make sure datadir is present
   file: path={{mysql_datadir}} state=directory owner=mysql group=mysql mode=0755
