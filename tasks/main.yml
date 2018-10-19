@@ -51,11 +51,15 @@
 - name: Add databases
   mysql_db: name={{item.name}} state=present login_user=root login_password='{{mysql_root_password}}'
   with_items: '{{mysql_databases}}'
+  loop_control:
+    label: '{{item | combine({"password": "***"})}}'
 
 - name: Add users
   mysql_user: name={{item.0.user}} host={{item.1}} password='{{item.0.password}}' priv='{{item.0.name}}.*:ALL' state=present login_user=root login_password='{{mysql_root_password}}' append_privs=yes
   with_subelements:
     - '{{mysql_databases}}'
     - hosts
+  loop_control:
+    label: '{{[item.0 | combine({"password": "***"}), item.1]}}'
 
 - import_tasks: backup.yml
