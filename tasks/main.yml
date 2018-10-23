@@ -30,26 +30,27 @@
 - name: Enable service
   service: name=mysqld state=started enabled=yes
 
-- name: Secure installation
-  mysql_user: name=root host={{item}} check_implicit_admin=yes password='{{mysql_root_password}}' login_user=root login_password='{{mysql_root_password}}'
-  with_items:
-    - '{{ansible_fqdn|lower()}}'
-    - '{{ansible_hostname|lower()}}'
-    - localhost
-    - 127.0.0.1
-    - ::1
-  when: mysql_secure and mysql_root_password != ''
+- block:
+  - name: Secure installation
+    mysql_user: name=root host={{item}} check_implicit_admin=yes password='{{mysql_root_password}}' login_user=root login_password='{{mysql_root_password}}'
+    with_items:
+      - '{{ansible_fqdn | lower()}}'
+      - '{{ansible_hostname | lower()}}'
+      - localhost
+      - 127.0.0.1
+      - ::1
+    when: mysql_root_password != ''
 
-- name: Remove anonymous users
-  mysql_user: name='' host={{item}} state=absent login_user=root login_password='{{mysql_root_password}}'
-  with_items:
-    - '{{ansible_hostname|lower()}}'
-    - '{{ansible_fqdn|lower()}}'
-    - localhost
-  when: mysql_secure
+  - name: Remove anonymous users
+    mysql_user: name='' host={{item}} state=absent login_user=root login_password='{{mysql_root_password}}'
+    with_items:
+      - '{{ansible_hostname | lower()}}'
+      - '{{ansible_fqdn | lower()}}'
+      - localhost
 
-- name: Remove test database
-  mysql_db: name=test state=absent login_user=root login_password='{{mysql_root_password}}'
+  - name: Remove test database
+    mysql_db: name=test state=absent login_user=root login_password='{{mysql_root_password}}'
+
   when: mysql_secure
 
 - name: Add databases
