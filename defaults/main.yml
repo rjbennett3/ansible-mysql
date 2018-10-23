@@ -53,10 +53,9 @@ mysql_secure: true
 # Root password
 mysql_root_password: mysql
 
-# Set to false if you don't want to configure backups
-mysql_backup: true
-
-# Backup user password and contact email
+# Backup (deactivated by default)
+# Default user password and contact email use the local 'mysqlbck' acocunt
+mysql_backup: false
 mysql_backup_password: mysqlbck
 mysql_backup_email: mysqlbck@localhost
 

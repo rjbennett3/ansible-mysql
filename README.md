@@ -10,7 +10,7 @@ The installation is secure following best practices found in the MySQL manual, i
 
 Multiple databases can be configured through `mysql_databases` list. Databases, users and grants will be generated based on this list (see `default/main.yml` for options).
 
-A local backup cron job is installed under the `mysqlbck` user. The template backup script is located in `templates/backup_all.sh.j2`
+A local backup cron job can installed under the `mysqlbck` user when setting `mysql_backup: true`. The template backup script is located in `templates/backup_all.sh.j2`.
 
 Requirements
 ------------
