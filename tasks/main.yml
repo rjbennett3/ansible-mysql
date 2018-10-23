@@ -1,6 +1,17 @@
 ---
-- name: Add repo
-  yum_repository: file={{item.file|default(item.name)}} name={{item.name}} description='{{item.desctiption|default(item.name)}}' enabled={{item.enabled|default('no')}} baseurl={{item.baseurl}} gpgcheck={{item.gpgcheck|default('yes')}} gpgkey={{item.gpgkey}} state=present owner={{item.owner|default('root')}} group={{item.group|default('root')}} mode={{item.mode|default(0644)}}
+- name: Add repositories
+  yum_repository:
+    name: '{{item.name}}'
+    baseurl: '{{item.baseurl}}'
+    description: '{{item.description | default(item.name)}}'
+    file: '{{item.file | default(item.name)}}'
+    enabled: '{{item.enabled | default("no")}}'
+    gpgcheck: '{{item.gpgcheck | default("no")}}'
+    gpgkey: '{{item.gpgkey | default(omit)}}'
+    owner: '{{item.owner | default("root")}}'
+    group: '{{item.group | default("root")}}'
+    mode: '{{item.mode | default(0644)}}'
+    state: present
   with_items:
     - '{{mysql_repos}}'
 
