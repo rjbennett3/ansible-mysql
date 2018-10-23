@@ -27,10 +27,6 @@ mysql_packages:
   - name: MySQL-python
     repo: mysql-{{mysql_version}}-community
 
-mysql_packages_dev: []
-#- name:
-#  repo:
-
 # Path to data
 mysql_datadir: /var/lib/mysql
 

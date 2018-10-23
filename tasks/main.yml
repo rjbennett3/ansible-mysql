@@ -20,11 +20,6 @@
   with_items:
     - '{{mysql_packages}}'
 
-- name: Install development packages
-  yum: name={{item.name}} state=present enablerepo={{item.repo|default(mysql_repos[0].name)}}
-  with_items:
-    - '{{mysql_packages_dev}}'
-
 - name: Make sure datadir is present
   file: path={{mysql_datadir}} state=directory owner=mysql group=mysql mode=0755
 
