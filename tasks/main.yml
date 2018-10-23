@@ -16,7 +16,7 @@
     - '{{mysql_repos}}'
 
 - name: Install packages
-  yum: name={{item.name}} state=present enablerepo={{item.repo|default(mysql_repos[0].name)}}
+  yum: name={{item}} state=present enablerepo='{{mysql_enabled_repos}}'
   with_items:
     - '{{mysql_packages}}'
 

@@ -21,11 +21,11 @@ mysql_repos:
     baseurl: 'http://repo.mysql.com/yum/mysql-connectors-community/el/{{ansible_distribution_major_version}}/$basearch/'
     gpgkey: 'http://repo.mysql.com/RPM-GPG-KEY-mysql'
 
+mysql_enablerepos: []
+
 mysql_packages:
-  - name: mysql-community-server
-    repo: mysql-{{mysql_version}}-community
-  - name: MySQL-python
-    repo: mysql-{{mysql_version}}-community
+  - mysql-community-server
+  - MySQL-python
 
 # Path to data
 mysql_datadir: /var/lib/mysql
