@@ -34,8 +34,8 @@
   - name: Secure installation
     mysql_user: name=root host={{item}} check_implicit_admin=yes password='{{mysql_root_password}}' login_user=root login_password='{{mysql_root_password}}'
     with_items:
-      - '{{ansible_fqdn | lower()}}'
-      - '{{ansible_hostname | lower()}}'
+      - '{{ansible_fqdn | lower}}'
+      - '{{ansible_hostname | lower}}'
       - localhost
       - 127.0.0.1
       - ::1
@@ -44,8 +44,8 @@
   - name: Remove anonymous users
     mysql_user: name='' host={{item}} state=absent login_user=root login_password='{{mysql_root_password}}'
     with_items:
-      - '{{ansible_hostname | lower()}}'
-      - '{{ansible_fqdn | lower()}}'
+      - '{{ansible_hostname | lower}}'
+      - '{{ansible_fqdn | lower}}'
       - localhost
 
   - name: Remove test database
