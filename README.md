@@ -1,16 +1,33 @@
 Mysql
 =====
-Install and configure mysql database server.
+Install and configure MySQL/MariaDB database servers.
 
-This role adds the official mysql repository, but leaves it disabled. It also adds MySQL Python to use Ansible modules.
+This role adds the official MySQL repository, but leaves it disabled. Alternatively users can provide a custom list of repositories (`mysql_repos`) and packages (`mysql_packages`) to install. For example, to install MariaDB once can provide the following:
 
-Select the version to install with `mysql_version`. You should also change the root password, the default is `mysql`.
+```
+mysql_version: '10.3'
 
-The installation is secure following best practices found in the MySQL manual, ie removing anonymous users and the test database.
+mysql_repos:
+  - name: mariadb
+    description: MariaDB
+    baseurl: 'http://yum.mariadb.org/{{mysql_version}}/centos7-amd64'
+    gpgkey: 'https://yum.mariadb.org/RPM-GPG-KEY-MariaDB'
+    gpgcheck: yes
+
+mysql_packages:
+  - MariaDB-server
+  - MySQL-python
+```
+
+When providing a custom list of packages, don't forget to add `MySQL-python` for Ansible modules to work.
+
+Select the version to install with `mysql_version`. You should also change the root password with `mysql_root_password`, the default is `mysql`.
+
+The installation is secured following best practices found in the MySQL manual, i.e. removing anonymous users and the test database. This step can be skipped by setting `mysql_secure: false`. Note securing the databases has only been tested on MySQL 5.6.
 
 Multiple databases can be configured through `mysql_databases` list. Databases, users and grants will be generated based on this list (see `default/main.yml` for options).
 
-A local backup cron job is installed under the `mysqlbck` user. The template backup script is located in `templates/backup_all.sh.j2`
+A local backup cron job can installed under the `mysqlbck` user. The template backup script is located in `templates/backup_all.sh.j2`. Note the default behavior has changed in v2.0.0, users need to explicitly activate this options with `mysql_backup: true`.
 
 Requirements
 ------------
@@ -35,8 +52,7 @@ Example:
 
 TODO
 ----
-- Secure installation for 5.7.
-- Backup should be optional.
+- Test secure installation for MySQL 5.7+ and MariaDB.
 - Creating backup user does not work if account is already in ldap.
 - Restrict backup user privileges, i.e `SELECT,RELOAD,FILE,SUPER,"LOCK TABLES","SHOW VIEW","SHOW DATABASES"`.
 

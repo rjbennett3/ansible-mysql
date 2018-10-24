@@ -2,13 +2,43 @@
 # Version to install
 mysql_version: 5.6
 
+mysql_repos:
+  - name: mysql-{{mysql_version}}-community
+    description: mysql-{{mysql_version}}-community
+    file: mysql-community
+    baseurl: 'http://repo.mysql.com/yum/mysql-{{mysql_version}}-community/el/{{ansible_distribution_major_version}}/$basearch/'
+    gpgkey: 'http://repo.mysql.com/RPM-GPG-KEY-mysql'
+
+  - name: mysql-tools-community
+    description: mysql-tools-community
+    file: mysql-community
+    baseurl: 'http://repo.mysql.com/yum/mysql-tools-community/el/{{ansible_distribution_major_version}}/$basearch/'
+    gpgkey: 'http://repo.mysql.com/RPM-GPG-KEY-mysql'
+
+  - name: mysql-connectors-community
+    description: mysql-connectors-community
+    file: mysql-community
+    baseurl: 'http://repo.mysql.com/yum/mysql-connectors-community/el/{{ansible_distribution_major_version}}/$basearch/'
+    gpgkey: 'http://repo.mysql.com/RPM-GPG-KEY-mysql'
+
+mysql_enablerepos: []
+
+mysql_packages:
+  - mysql-community-server
+  - MySQL-python
+
 # Path to data
 mysql_datadir: /var/lib/mysql
+
+# Set to false if you don't want to run tasks to secure the database
+mysql_secure: true
 
 # Root password
 mysql_root_password: mysql
 
-# Backup user password and contact email
+# Backup (deactivated by default)
+# Default user password and contact email use the local 'mysqlbck' acocunt
+mysql_backup: false
 mysql_backup_password: mysqlbck
 mysql_backup_email: mysqlbck@localhost
 
@@ -19,7 +49,3 @@ mysql_databases: []
   #   user: database_username
   #   password: database_password_for_user
   #   hosts: [host1, host2]
-
-
-# Installation of  development packages
-mysql_packages_dev: no

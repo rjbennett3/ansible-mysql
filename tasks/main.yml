@@ -1,20 +1,24 @@
 ---
-- name: Add repo
-  yum_repository: file=mysql-community name={{item}} description='{{item}}' enabled=no baseurl=http://repo.mysql.com/yum/{{item}}/el/{{ansible_distribution_major_version}}/$basearch/ gpgcheck=yes gpgkey=http://repo.mysql.com/RPM-GPG-KEY-mysql state=present owner=root group=root mode=0644
+- name: Add repositories
+  yum_repository:
+    name: '{{item.name}}'
+    baseurl: '{{item.baseurl}}'
+    description: '{{item.description | default(item.name)}}'
+    file: '{{item.file | default(item.name)}}'
+    enabled: '{{item.enabled | default("no")}}'
+    gpgcheck: '{{item.gpgcheck | default("no")}}'
+    gpgkey: '{{item.gpgkey | default(omit)}}'
+    owner: '{{item.owner | default("root")}}'
+    group: '{{item.group | default("root")}}'
+    mode: '{{item.mode | default(0644)}}'
+    state: present
   with_items:
-    - mysql-{{mysql_version}}-community
-    - mysql-tools-community
-    - mysql-connectors-community
+    - '{{mysql_repos}}'
 
 - name: Install packages
-  yum: name={{item}} state=present enablerepo=mysql-{{mysql_version}}-community
+  yum: name={{item}} state=present enablerepo='{{mysql_enabled_repos}}'
   with_items:
-    - mysql-community-server
-    - MySQL-python
-
-- name: Install development packages
-  yum: name=mysql-devel state=present enablerepo=mysql-{{mysql_version}}-community
-  when: mysql_packages_dev
+    - '{{mysql_packages}}'
 
 - name: Make sure datadir is present
   file: path={{mysql_datadir}} state=directory owner=mysql group=mysql mode=0755
@@ -26,27 +30,28 @@
 - name: Enable service
   service: name=mysqld state=started enabled=yes
 
-- name: Secure installation
-  mysql_user: name=root host={{item}} check_implicit_admin=yes password='{{mysql_root_password}}' login_user=root login_password='{{mysql_root_password}}'
-  with_items:
-    - '{{ansible_fqdn|lower()}}'
-    - '{{ansible_hostname|lower()}}'
-    - localhost
-    - 127.0.0.1
-    - ::1
-  when: mysql_version is version('5.7', '<') and mysql_root_password != ''
+- block:
+  - name: Secure installation
+    mysql_user: name=root host={{item}} check_implicit_admin=yes password='{{mysql_root_password}}' login_user=root login_password='{{mysql_root_password}}'
+    with_items:
+      - '{{ansible_fqdn | lower}}'
+      - '{{ansible_hostname | lower}}'
+      - localhost
+      - 127.0.0.1
+      - ::1
+    when: mysql_root_password != ''
 
-- name: Remove anonymous users
-  mysql_user: name='' host={{item}} state=absent login_user=root login_password='{{mysql_root_password}}'
-  with_items:
-    - '{{ansible_hostname|lower()}}'
-    - '{{ansible_fqdn|lower()}}'
-    - localhost
-  when: mysql_version is version('5.7', '<')
+  - name: Remove anonymous users
+    mysql_user: name='' host={{item}} state=absent login_user=root login_password='{{mysql_root_password}}'
+    with_items:
+      - '{{ansible_hostname | lower}}'
+      - '{{ansible_fqdn | lower}}'
+      - localhost
 
-- name: Remove test database
-  mysql_db: name=test state=absent login_user=root login_password='{{mysql_root_password}}'
-  when: mysql_version is version('5.7', '<')
+  - name: Remove test database
+    mysql_db: name=test state=absent login_user=root login_password='{{mysql_root_password}}'
+
+  when: mysql_secure
 
 - name: Add databases
   mysql_db: name={{item.name}} state=present login_user=root login_password='{{mysql_root_password}}'
@@ -63,3 +68,4 @@
     label: '{{[item.0 | combine({"password": "***"}), item.1]}}'
 
 - import_tasks: backup.yml
+  when: mysql_backup
