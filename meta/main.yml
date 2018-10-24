@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Luis Gracia
-  description: Install and configure mysql database server
+  description: Install and configure MySQL/MariaDB database servers
   license: MIT
   min_ansible_version: 2.1
   platforms:
