@@ -53,6 +53,9 @@
 
   when: mysql_secure
 
+- import_tasks: encryption.yml
+  when: mysql_encryption_enabled and mysql_encryption_key_plugin == 'file'
+
 - name: Add databases
   mysql_db: name={{item.name}} state=present login_user=root login_password='{{mysql_root_password}}'
   with_items: '{{mysql_databases}}'

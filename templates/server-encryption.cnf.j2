@@ -1,0 +1,12 @@
+[mariadb]
+plugin-load-add = file_key_manangement
+{% for opt,val in mysql_encryption_key_plugin_options.iteritems() %}
+{{opt}} = {{val}}
+{% endfor %}
+
+!include enable_encryption.preset
+
+# InnoDB/XtraDB Encryption
+innodb-encrypt-tables = ON
+innodb-encrypt-log = ON
+innodb-encryption-threads = 4
