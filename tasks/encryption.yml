@@ -3,6 +3,7 @@
   shell: echo "1;$(openssl rand -hex 16)" > {{mysql_encryption_key_plugin_options.file_key_management_filename}}
   args:
     creates: '{{mysql_encryption_key_plugin_options.file_key_management_filename}}'
+  no_log: yes
 
 - name: Find if file plugin has been installed
   command: >
@@ -10,6 +11,7 @@
   register: mysql__r_key_plugin_installed
   changed_when: false
   check_mode: no
+  no_log: yes
 
 - block:
     - name: Prepare config to install file plugin
@@ -18,6 +20,7 @@
     - name: Install file plugin
       command: >
         mysql -uroot -p'{{mysql_root_password}}' -e 'install plugin file_key_management soname "file_key_management";'
+      no_log: yes
 
     - name: Install file plugin
       file: path=/etc/my.cnf.d/z_install_key_plugin.cnf state=absent
