@@ -29,6 +29,8 @@ Multiple databases can be configured through `mysql_databases` list. Databases, 
 
 A local backup cron job can installed under the `mysqlbck` user. The template backup script is located in `templates/backup_all.sh.j2`. Note the default behavior has changed in v2.0.0, users need to explicitly activate this options with `mysql_backup: true`.
 
+Database encryption can be enabled with `mysql_encryption_enabled: yes` (Only been tested with MariaDB 10.3+). Only the File Key Management Plugin is supported, and when encrypting the keys, only `FILE:` is supported. See options in `defaults/main.yml` for options.
+
 Requirements
 ------------
 See `meta/main.yml`.
