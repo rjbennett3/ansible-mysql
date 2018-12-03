@@ -48,7 +48,13 @@ mysql_databases: []
   # - name: database_name
   #   user: database_username
   #   password: database_password_for_user
+  #   privileges: SELECT                      # Optional (default: ALL)
   #   hosts: [host1, host2]
+
+# Append privileges to users. Set to:
+#   - `yes` to support users with multiple databases
+#   - `no` to overwrite existing privileges
+mysql_append_privs: yes
 
 # Encryption
 # See https://mariadb.com/kb/en/library/encryption-key-management

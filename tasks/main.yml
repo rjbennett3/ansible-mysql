@@ -67,7 +67,7 @@
     label: '{{item | combine({"password": "***"})}}'
 
 - name: Add users
-  mysql_user: name={{item.0.user}} host={{item.1}} password='{{item.0.password}}' priv='{{item.0.name}}.*:ALL' state=present login_user=root login_password='{{mysql_root_password}}' append_privs=yes
+  mysql_user: name={{item.0.user}} host={{item.1}} password='{{item.0.password}}' priv='{{item.0.name}}.*:{{item.0.privileges | default("ALL")}}' state=present login_user=root login_password='{{mysql_root_password}}' append_privs='{{mysql_append_privs}}'
   with_subelements:
     - '{{mysql_databases}}'
     - hosts
