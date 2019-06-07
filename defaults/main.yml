@@ -30,9 +30,6 @@ mysql_packages:
 # Path to data
 mysql_datadir: /var/lib/mysql
 
-# Command to initialize a database
-mysql_install_db: mysql_install_db
-
 # Set to false if you don't want to run tasks to secure the database
 mysql_secure: true
 
