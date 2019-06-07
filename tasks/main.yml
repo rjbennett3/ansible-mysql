@@ -31,6 +31,15 @@
   template: dest=/etc/my.cnf.d/server.cnf src=server.cnf.j2 owner=root group=root mode=0644
   notify: Restart mysql
 
+- name: "test for existance of database"
+  stat: 
+    path: '{{mysql_datadir}}/mysql'
+  register: p
+
+- name: Initialize datadir
+  command: '{{mysql_install_db}}'
+  when: p.stat.exists == False 
+
 - name: Enable service
   service: name=mysqld state=started enabled=yes
 
