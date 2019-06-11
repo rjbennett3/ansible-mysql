@@ -20,6 +20,11 @@
   with_items:
     - '{{mysql_packages}}'
 
+- name: stop service if running
+  service:
+   name: mysql
+   state: stopped
+
 - name: Make sure datadir is present
   file: path={{mysql_datadir}} state=directory owner=mysql group=mysql mode=0755
 
@@ -31,14 +36,10 @@
   template: dest=/etc/my.cnf.d/server.cnf src=server.cnf.j2 owner=root group=root mode=0644
   notify: Restart mysql
 
-- name: test for existance of database
-  stat: 
-    path: '{{mysql_datadir}}/mysql'
-  register: mysql__r_path
-
-- name: Initialize datadir
+- name: Initialize datadir if it does  not exist
   command: mysql_install_db
-  when: not mysql__r_path.stat.exists
+  args:
+    creates: '{{mysql_datadir}}/mysql'
 
 - name: Enable service
   service: name=mysqld state=started enabled=yes
