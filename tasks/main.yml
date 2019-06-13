@@ -34,14 +34,14 @@
   changed_when: false
   register: r_mysql__mysql_status
 
-- name: find initial variables of mysql
-  shell: "mysqladmin variables -u root --password={{mysql_root_password}} | tr -d ' '"
+- name: find value of datadir in running database
+  command: "mysql -u root --password={{mysql_root_password}} -B --disable-column-names -e 'select @@datadir;'"
   ignore_errors: true
   changed_when: false
-  register: r_mysql__mysqladmin_variables
+  register: r_mysql__mysql_datadir
 
-- name: determine datadir of running mysql, set to null if not running
-  set_fact: r_mysql__datadir_orig="{{r_mysql__mysqladmin_variables.stdout_lines | list | select('search','datadir') | first | regex_replace('\|datadir\|(.*)\|', '\\1') if (r_mysql__mysql_status is not failed) else ''}}"
+- name: determine datadir of running mysql, set to null if not available
+  set_fact: r_mysql__datadir_orig="{{r_mysql__mysql_datadir.stdout|default('')}}"
 
 # TODO - We might want to idiot-proof and check that mysql_datadir is not set to null by a user.
 
