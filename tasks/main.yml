@@ -36,6 +36,23 @@
   template: dest=/etc/my.cnf.d/server.cnf src=server.cnf.j2 owner=root group=root mode=0644
   notify: Restart mysql
 
+- name: find current systemctl status of mysql
+  command: "systemctl status mysql"
+  ignore_errors: true
+  changed_when: false
+  register: r_mysql__mysql_status
+
+- name: find initial variables of mysql
+  shell: "mysqladmin variables -u root --password={{mysql_root_password}} | tr -d ' '"
+  ignore_errors: true
+  changed_when: false
+  register: r_mysql__mysqladmin_variables
+
+- name: determine datadir of running mysql, set to null if not running
+  set_fact: r_mysql__datadir_orig="{{r_mysql__mysqladmin_variables.stdout_lines | list | select('search','datadir') | first | regex_replace('\|datadir\|(.*)\|', '\\1') if (r_mysql__mysql_status is not failed) else ''}}"
+
+# TODO - We might want to idiot-proof and check that mysql_datadir is not set to null by a user.
+
 - name: Initialize datadir if it does  not exist
   command: mysql_install_db
   args:
